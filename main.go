@@ -4,14 +4,40 @@ import (
 	//"strings"
 
 	"fmt"
+	"io"
+	"os"
 	"strconv"
+	"time"
 )
 
 func main() {
-	z := calculate("+48 + -48")
+	start := time.Now()
+
+	file, err := os.Open("test.txt")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer file.Close()
+	var text string
+	data := make([]byte, 64)
+
+	for {
+		n, err := file.Read(data)
+		if err == io.EOF { // если конец файла
+			break // выходим из цикла
+		}
+		text += string(data[:n])
+	}
+
+	z := calculate(text)
+	//z := calculate("2147483647")
 	//z := calculate("(1+(4+5+2)-3)+(6+8)")
 	//z := calculate("1-(+1+1)")
-	fmt.Print(z)
+	fmt.Println(z)
+
+	duration := time.Since(start)
+	fmt.Println(duration)
 }
 
 func calculate(s string) int {
@@ -75,6 +101,7 @@ func getExpression(s string) string {
 	stack := Stack{}
 
 	for i := 0; i < len(s); i++ {
+		char := string(s[i])
 		if isDelimiter(s[i]) {
 			continue
 		}
@@ -90,12 +117,12 @@ func getExpression(s string) string {
 			i--
 		}
 		if isOperator(s[i]) {
-			if string(s[i]) == "(" {
-				stack.push(string(s[i]))
+			if char == "(" {
+				stack.push(char)
 				if (string(s[i+1])) == "+" {
 					i++
 				}
-			} else if string(s[i]) == ")" {
+			} else if char == ")" {
 				char := stack.pop().(string)
 				for char != "(" {
 					output += char + " "
@@ -103,11 +130,11 @@ func getExpression(s string) string {
 				}
 			} else {
 				if stack.count() > 0 {
-					if getPriority(string(s[i])) <= getPriority(stack.peek().(string)) {
+					if getPriority(char) <= getPriority(stack.peek().(string)) {
 						output += stack.pop().(string) + " "
 					}
 				}
-				stack.push(string(s[i]))
+				stack.push(char)
 			}
 		}
 	}
@@ -154,48 +181,4 @@ func isDigit(s byte) bool {
 		return true
 	}
 	return false
-}
-
-type Node struct {
-	val  interface{}
-	next *Node
-	//prev *Node
-}
-
-type Stack struct {
-	top        *Node
-	nodesCount int
-}
-
-func (this *Stack) stack() Stack {
-	node := Node{}
-	stack := Stack{top: &node}
-	return stack
-}
-
-func (this *Stack) push(val interface{}) {
-	node := Node{val: val, next: (*this).top}
-	(*this).top = &node
-	(*this).nodesCount++
-}
-
-func (this *Stack) pop() interface{} {
-	if (*this).count() == 0 {
-		return nil
-	}
-	temp := (*this).top
-	(*this).top = (*this).top.next
-	(*this).nodesCount--
-	return temp.val
-}
-
-func (this *Stack) peek() interface{} {
-	if (*this).count() == 0 {
-		return nil
-	}
-	return (*this).top.val
-}
-
-func (this *Stack) count() int {
-	return (*this).nodesCount
 }
