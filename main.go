@@ -31,7 +31,7 @@ func main() {
 
 	start := time.Now()
 	z := calculate(text)
-	//z := calculate("2147483647")
+	//z := calculate("-2+ 1")
 	//z := calculate("(1+(4+5+2)-3)+(6+8)")
 	//z := calculate("1-(+1+1)")
 	fmt.Println(z)
@@ -63,19 +63,18 @@ func count(s string) int {
 			stack.push(val)
 			i--
 		} else if isOperator(s[i]) {
-			a, err := stack.pop().(int)
-			b, err := stack.pop().(int)
-
-			if !err {
+			a, _ := stack.pop().(int)
+			if stack.count() == 0 {
 				switch string(s[i]) {
 				case "+":
 					stack.push(a)
 				case "-":
-					stack.push(a)
+					stack.push(-a)
 				}
 				continue
 			}
 
+			b, _ := stack.pop().(int)
 			switch string(s[i]) {
 			case "+":
 				stack.push(b + a)
