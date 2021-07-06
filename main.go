@@ -11,8 +11,6 @@ import (
 )
 
 func main() {
-	start := time.Now()
-
 	file, err := os.Open("test.txt")
 	if err != nil {
 		fmt.Println(err)
@@ -24,12 +22,14 @@ func main() {
 
 	for {
 		n, err := file.Read(data)
-		if err == io.EOF { // если конец файла
-			break // выходим из цикла
+		if err == io.EOF {
+			break
 		}
 		text += string(data[:n])
+
 	}
 
+	start := time.Now()
 	z := calculate(text)
 	//z := calculate("2147483647")
 	//z := calculate("(1+(4+5+2)-3)+(6+8)")
@@ -41,10 +41,6 @@ func main() {
 }
 
 func calculate(s string) int {
-	/*index := 0
-	  for strings.HasPrefix(s, " "){
-	      index++
-	  }*/
 	output := getExpression(s)
 	fmt.Println(output)
 	result := count(output)
@@ -52,22 +48,19 @@ func calculate(s string) int {
 }
 
 func count(s string) int {
-	var result int
 	stack := Stack{}
 
 	for i := 0; i < len(s); i++ {
 		if isDigit(s[i]) {
-			var temp string
-
+			j := i
 			for !isDelimiter(s[i]) && !isOperator(s[i]) {
-				temp += string(s[i])
 				i++
 				if i == len(s) {
 					break
 				}
 			}
-			val, _ := strconv.Atoi(temp)
-			stack.push(int(val))
+			val, _ := strconv.Atoi(s[j:i])
+			stack.push(val)
 			i--
 		} else if isOperator(s[i]) {
 			a, err := stack.pop().(int)
@@ -76,21 +69,19 @@ func count(s string) int {
 			if !err {
 				switch string(s[i]) {
 				case "+":
-					result = a
+					stack.push(a)
 				case "-":
-					result = -a
+					stack.push(a)
 				}
-				stack.push(result)
 				continue
 			}
 
 			switch string(s[i]) {
 			case "+":
-				result = b + a
+				stack.push(b + a)
 			case "-":
-				result = b - a
+				stack.push(b - a)
 			}
-			stack.push(result)
 		}
 	}
 	return stack.peek().(int)
@@ -106,14 +97,14 @@ func getExpression(s string) string {
 			continue
 		}
 		if isDigit(s[i]) {
+			j := i
 			for !isOperator(s[i]) && !isDelimiter(s[i]) {
-				output += string(s[i])
 				i++
 				if i == len(s) {
 					break
 				}
 			}
-			output += " "
+			output += s[j:i] + " "
 			i--
 		}
 		if isOperator(s[i]) {
