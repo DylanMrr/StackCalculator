@@ -8,7 +8,6 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"unicode/utf8"
 )
 
 func main() {
@@ -51,6 +50,7 @@ func main() {
 }
 
 func calculate(s string) int {
+	configure()
 	output := getExpression(s)
 	//fmt.Println(output)
 	result := count(output)
@@ -58,11 +58,6 @@ func calculate(s string) int {
 }
 
 func count(s string) int {
-	bufPlus := make([]byte, 1)
-	bufMinus := make([]byte, 1)
-	_ = utf8.EncodeRune(bufPlus, '+')
-	_ = utf8.EncodeRune(bufMinus, '-')
-
 	stack := Stack{}
 
 	for i := 0; i < len(s); i++ {
@@ -98,13 +93,6 @@ func count(s string) int {
 }
 
 func getExpression(s string) string {
-	bufPlus := make([]byte, 1)
-	bufOpen := make([]byte, 1)
-	bufClose := make([]byte, 1)
-	_ = utf8.EncodeRune(bufPlus, '+')
-	_ = utf8.EncodeRune(bufOpen, '(')
-	_ = utf8.EncodeRune(bufClose, ')')
-
 	var output string
 	stack := Stack{}
 
