@@ -8,9 +8,20 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"unicode/utf8"
 )
 
 func main() {
+
+	/*buf := make([]byte, 1)
+	n := utf8.EncodeRune(buf, '(')
+	fmt.Println(buf[0])
+	fmt.Println(n)
+
+	str := "(fs)"
+	fmt.Println(str[0])
+	return*/
+
 	file, err := os.Open("test.txt")
 	if err != nil {
 		fmt.Println(err)
@@ -47,6 +58,11 @@ func calculate(s string) int {
 }
 
 func count(s string) int {
+	bufPlus := make([]byte, 1)
+	bufMinus := make([]byte, 1)
+	_ = utf8.EncodeRune(bufPlus, '+')
+	_ = utf8.EncodeRune(bufMinus, '-')
+
 	stack := Stack{}
 
 	for i := 0; i < len(s); i++ {
@@ -60,20 +76,20 @@ func count(s string) int {
 		} else if isOperator(s[i]) {
 			a, _ := stack.pop().(int)
 			if stack.count() == 0 {
-				switch string(s[i]) {
-				case "+":
+				switch s[i] {
+				case bufPlus[0]:
 					stack.push(a)
-				case "-":
+				case bufMinus[0]:
 					stack.push(-a)
 				}
 				continue
 			}
 
 			b, _ := stack.pop().(int)
-			switch string(s[i]) {
-			case "+":
+			switch s[i] {
+			case bufPlus[0]:
 				stack.push(b + a)
-			case "-":
+			case bufMinus[0]:
 				stack.push(b - a)
 			}
 		}
@@ -82,6 +98,13 @@ func count(s string) int {
 }
 
 func getExpression(s string) string {
+	bufPlus := make([]byte, 1)
+	bufOpen := make([]byte, 1)
+	bufClose := make([]byte, 1)
+	_ = utf8.EncodeRune(bufPlus, '+')
+	_ = utf8.EncodeRune(bufOpen, '(')
+	_ = utf8.EncodeRune(bufClose, ')')
+
 	var output string
 	stack := Stack{}
 
@@ -99,12 +122,12 @@ func getExpression(s string) string {
 			i--
 		}
 		if isOperator(s[i]) {
-			if char == "(" {
+			if s[i] == bufOpen[0] {
 				stack.push(char)
-				if (string(s[i+1])) == "+" {
+				if s[i+1] == bufPlus[0] {
 					i++
 				}
-			} else if char == ")" {
+			} else if s[i] == bufClose[0] {
 				char := stack.pop().(string)
 				for char != "(" {
 					output += char + " "
