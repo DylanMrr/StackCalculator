@@ -33,16 +33,15 @@ func main() {
 	z := calculate(text)
 	//z := calculate("-2+ 1")
 	//z := calculate("(1+(4+5+2)-3)+(6+8)")
-	//z := calculate("1-(+1+1)")
-	fmt.Println(z)
-
+	//z := calculate("1+1")
 	duration := time.Since(start)
 	fmt.Println(duration)
+	fmt.Println(z)
 }
 
 func calculate(s string) int {
 	output := getExpression(s)
-	fmt.Println(output)
+	//fmt.Println(output)
 	result := count(output)
 	return result
 }
@@ -53,15 +52,11 @@ func count(s string) int {
 	for i := 0; i < len(s); i++ {
 		if isDigit(s[i]) {
 			j := i
-			for !isDelimiter(s[i]) && !isOperator(s[i]) {
+			for i != len(s) && !isDelimiter(s[i]) && !isOperator(s[i]) {
 				i++
-				if i == len(s) {
-					break
-				}
 			}
 			val, _ := strconv.Atoi(s[j:i])
 			stack.push(val)
-			i--
 		} else if isOperator(s[i]) {
 			a, _ := stack.pop().(int)
 			if stack.count() == 0 {
@@ -97,11 +92,8 @@ func getExpression(s string) string {
 		}
 		if isDigit(s[i]) {
 			j := i
-			for !isOperator(s[i]) && !isDelimiter(s[i]) {
+			for i != len(s) && !isOperator(s[i]) && !isDelimiter(s[i]) {
 				i++
-				if i == len(s) {
-					break
-				}
 			}
 			output += s[j:i] + " "
 			i--
