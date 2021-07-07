@@ -10,10 +10,15 @@ Conditions:
   Every number and running calculation will fit in a signed 32-bit integer.
   
 Example input:
-"1 + 1"\n
+"1 + 1"
+
 " 2-1 + 2 "
+
 "(1+(4+5+2)-3)+(6+8)"
+
 "+48 + -48"
+
 "-2+ 1"
+
 
 Input string must be put in test.txt
