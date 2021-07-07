@@ -4,12 +4,18 @@ Given a string s representing a valid expression.
 Based on a stack calculator using reverse polish notation
 
 Conditions:
+
   1 <= s.length <= 3 * 105
+  
   s consists of digits, '+', '-', '(', ')', and ' '.
+  
   s represents a valid expression.
+  
   Every number and running calculation will fit in a signed 32-bit integer.
   
+  
 Example input:
+
 "1 + 1"
 
 " 2-1 + 2 "
