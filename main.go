@@ -1,26 +1,15 @@
 package main
 
 import (
-	//"strings"
-
 	"fmt"
 	"io"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
 func main() {
-
-	/*buf := make([]byte, 1)
-	n := utf8.EncodeRune(buf, '(')
-	fmt.Println(buf[0])
-	fmt.Println(n)
-
-	str := "(fs)"
-	fmt.Println(str[0])
-	return*/
-
 	file, err := os.Open("test.txt")
 	if err != nil {
 		fmt.Println(err)
@@ -52,7 +41,6 @@ func main() {
 func calculate(s string) int {
 	configure()
 	output := getExpression(s)
-	//fmt.Println(output)
 	result := count(output)
 	return result
 }
@@ -93,7 +81,7 @@ func count(s string) int {
 }
 
 func getExpression(s string) string {
-	var output string
+	var out strings.Builder
 	stack := Stack{}
 
 	for i := 0; i < len(s); i++ {
@@ -106,7 +94,8 @@ func getExpression(s string) string {
 			for i != len(s) && !isOperator(s[i]) && !isDelimiter(s[i]) {
 				i++
 			}
-			output += s[j:i] + " "
+			out.WriteString(s[j:i])
+			out.WriteByte(bufSpace[0])
 			i--
 		}
 		if isOperator(s[i]) {
@@ -118,13 +107,15 @@ func getExpression(s string) string {
 			} else if s[i] == bufClose[0] {
 				char := stack.pop().(string)
 				for char != "(" {
-					output += char + " "
+					out.WriteString(char)
+					out.WriteByte(bufSpace[0])
 					char = stack.pop().(string)
 				}
 			} else {
 				if stack.count() > 0 {
 					if getPriority(char) <= getPriority(stack.peek().(string)) {
-						output += stack.pop().(string) + " "
+						out.WriteString(stack.pop().(string))
+						out.WriteByte(bufSpace[0])
 					}
 				}
 				stack.push(char)
@@ -132,7 +123,8 @@ func getExpression(s string) string {
 		}
 	}
 	for stack.count() > 0 {
-		output += stack.pop().(string) + " "
+		out.WriteString(stack.pop().(string))
+		out.WriteByte(bufSpace[0])
 	}
-	return output
+	return out.String()
 }

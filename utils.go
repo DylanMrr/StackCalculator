@@ -16,16 +16,19 @@ var bufPlus []byte
 var bufMinus []byte
 var bufOpen []byte
 var bufClose []byte
+var bufSpace []byte
 
 func configure() {
 	bufPlus = make([]byte, 1)
 	bufMinus = make([]byte, 1)
 	bufOpen = make([]byte, 1)
 	bufClose = make([]byte, 1)
+	bufSpace = make([]byte, 1)
 	_ = utf8.EncodeRune(bufPlus, '+')
 	_ = utf8.EncodeRune(bufMinus, '-')
 	_ = utf8.EncodeRune(bufOpen, '(')
 	_ = utf8.EncodeRune(bufClose, ')')
+	_ = utf8.EncodeRune(bufSpace, ' ')
 }
 
 func getPriority(s string) int {
@@ -37,7 +40,7 @@ func getPriority(s string) int {
 }
 
 func isDelimiter(s byte) bool {
-	return string(s) == " "
+	return s == bufSpace[0]
 }
 
 func isDigit(s byte) bool {
